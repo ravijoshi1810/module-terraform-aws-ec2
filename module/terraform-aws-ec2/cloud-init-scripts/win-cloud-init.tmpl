@@ -1,0 +1,16 @@
+<powershell>
+
+# Create local user and add to administrator Group:
+net user winadmin ${user_data_runtime_creds} /add /y
+net localgroup administrators winadmin /add
+
+# Registry update to enable ntlm connection for custom local account
+set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\" -Name "LocalAccountTokenFilterPolicy" -Value 1
+
+# Update local registry changes.
+gpupdate /force
+
+# Add Firewall Rule
+netsh advfirewall firewall add rule name="WinRM-Custom-HTTP" protocol=TCP dir=in localport=5985 action=allow
+</powershell>
+
